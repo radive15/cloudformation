@@ -186,7 +186,7 @@ Resources:
       SubnetId: !Ref PrivateSubnetThree
       RouteTableId: !Ref PrivateRouteTable
 
-
+  # security group for VPC
   SecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -210,3 +210,32 @@ Resources:
           CidrIp: 0.0.0.0/0
       GroupName: !Sub secgroup bastion ${AWS::StackName}
       VpcId: !Ref VPC
+  
+  # security group for LB
+  SecurityGroupLB:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: security group for load balancer
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '443'
+          ToPort: '443'
+          CidrIp: 0.0.0.0/0
+      GroupName: !Sub secgroup load balancer ${AWS::StackName}
+      VpcId: !Ref VPC
+  
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancing::LoadBalancer
+    Properties:
+      LoadBalancerName: !Sub public load balancer ${AWS::StackName}
+      CrossZone: true
+      AvailabilityZone:
+        - !Select [ 0, !GetAZs ]
+        - !Select [ 1, !GetAZs ]
+        - !Select [ 2, !GetAZs ]
+      SecurityGroups:
+        - !Ref SecurityGroupLB
