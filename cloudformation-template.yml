@@ -210,8 +210,3 @@ Resources:
           CidrIp: 0.0.0.0/0
       GroupName: !Sub secgroup bastion ${AWS::StackName}
       VpcId: !Ref VPC
-
-  PrivateHostedZone:
-    Type: AWS::Route53::HostedZone
-    Properties:
-      VPCs:
